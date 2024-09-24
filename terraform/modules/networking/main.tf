@@ -1,4 +1,3 @@
-# Создание VPC
 resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
@@ -9,7 +8,6 @@ resource "aws_vpc" "main" {
   }
 }
 
-# Создание Internet Gateway
 resource "aws_internet_gateway" "main" {
   vpc_id = aws_vpc.main.id
 
@@ -18,7 +16,6 @@ resource "aws_internet_gateway" "main" {
   }
 }
 
-# Создание публичных подсетей
 resource "aws_subnet" "public" {
   count                   = length(var.public_subnet_cidrs)
   vpc_id                  = aws_vpc.main.id
@@ -31,7 +28,6 @@ resource "aws_subnet" "public" {
   }
 }
 
-# Создание приватных подсетей
 resource "aws_subnet" "private" {
   count             = length(var.private_subnet_cidrs)
   vpc_id            = aws_vpc.main.id
@@ -43,7 +39,6 @@ resource "aws_subnet" "private" {
   }
 }
 
-# Создание NAT Gateway
 resource "aws_nat_gateway" "main" {
   allocation_id = aws_eip.nat[0].id
   subnet_id     = aws_subnet.public[0].id
@@ -55,7 +50,6 @@ resource "aws_nat_gateway" "main" {
   depends_on = [aws_internet_gateway.main]
 }
 
-# Создание Elastic IP для NAT Gateway
   resource "aws_eip" "nat" {
     domain        = "vpc"  
     count      = 1
@@ -65,7 +59,6 @@ resource "aws_nat_gateway" "main" {
     }
   }
 
-# Создание таблицы маршрутизации для публичных подсетей
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
@@ -79,7 +72,6 @@ resource "aws_route_table" "public" {
   }
 }
 
-# Создание таблицы маршрутизации для приватных подсетей
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
 
@@ -93,14 +85,12 @@ resource "aws_route_table" "private" {
   }
 }
 
-# Ассоциация публичных подсетей с таблицей маршрутизации
 resource "aws_route_table_association" "public" {
   count          = length(var.public_subnet_cidrs)
   subnet_id      = aws_subnet.public[count.index].id
   route_table_id = aws_route_table.public.id
 }
 
-# Ассоциация приватных подсетей с таблицей маршрутизации
 resource "aws_route_table_association" "private" {
   count          = length(var.private_subnet_cidrs)
   subnet_id      = aws_subnet.private[count.index].id

@@ -1,4 +1,3 @@
-# Создание IAM роли для кластера EKS
 resource "aws_iam_role" "eks_cluster" {
   name = "projectlev-eks-cluster-role"
 
@@ -14,17 +13,15 @@ resource "aws_iam_role" "eks_cluster" {
   })
 }
 
-# Присоединение необходимых политик к роли кластера
 resource "aws_iam_role_policy_attachment" "eks_cluster_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster.name
 }
 
-# Создание кластера EKS
 resource "aws_eks_cluster" "main" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_cluster.arn
-  version  = "1.27"  # Укажите желаемую версию Kubernetes
+  version  = "1.30" 
 
   vpc_config {
     subnet_ids = var.subnet_ids
@@ -33,7 +30,6 @@ resource "aws_eks_cluster" "main" {
   depends_on = [aws_iam_role_policy_attachment.eks_cluster_policy]
 }
 
-# Создание IAM роли для группы узлов
 resource "aws_iam_role" "eks_nodes" {
   name = "projectlev-eks-node-group-role"
 
@@ -49,7 +45,6 @@ resource "aws_iam_role" "eks_nodes" {
   })
 }
 
-# Присоединение необходимых политик к роли группы узлов
 resource "aws_iam_role_policy_attachment" "eks_worker_node_policy" {
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_nodes.name
@@ -65,7 +60,6 @@ resource "aws_iam_role_policy_attachment" "eks_container_registry_readonly" {
   role       = aws_iam_role.eks_nodes.name
 }
 
-# Создание группы узлов EKS
 resource "aws_eks_node_group" "main" {
   cluster_name    = aws_eks_cluster.main.name
   node_group_name = "projectlev-node-group"

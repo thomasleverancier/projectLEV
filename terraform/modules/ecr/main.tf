@@ -1,14 +1,11 @@
-# Создание ECR репозитория
 resource "aws_ecr_repository" "main" {
   name                 = var.repository_name
   image_tag_mutability = "MUTABLE"
 
-  # Включаем сканирование образов на наличие уязвимостей
   image_scanning_configuration {
     scan_on_push = true
   }
 
-  # Включаем шифрование репозитория
   encryption_configuration {
     encryption_type = "AES256"
   }
@@ -20,7 +17,6 @@ resource "aws_ecr_repository" "main" {
   }
 }
 
-# Политика жизненного цикла для ECR репозитория
 resource "aws_ecr_lifecycle_policy" "main" {
   repository = aws_ecr_repository.main.name
 
@@ -40,7 +36,6 @@ resource "aws_ecr_lifecycle_policy" "main" {
   })
 }
 
-# Политика доступа к репозиторию
 resource "aws_ecr_repository_policy" "main" {
   repository = aws_ecr_repository.main.name
 
@@ -51,7 +46,7 @@ resource "aws_ecr_repository_policy" "main" {
         Sid    = "AllowPullPush"
         Effect = "Allow"
         Principal = {
-          AWS = "*"  # Здесь можно ограничить доступ конкретными ARN
+          AWS = "*"  
         }
         Action = [
           "ecr:GetDownloadUrlForLayer",

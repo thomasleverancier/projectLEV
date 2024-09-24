@@ -1,9 +1,8 @@
-# Определяем провайдера AWS
 provider "aws" {
   region = var.aws_region
 }
 
-# Модуль для создания сетевой инфраструктуры
+
 module "networking" {
   source = "../../modules/networking"
 
@@ -13,14 +12,12 @@ module "networking" {
   availability_zones   = var.availability_zones
 }
 
-# Модуль для создания ECR репозитория
 module "ecr" {
   source = "../../modules/ecr"
 
   repository_name = var.ecr_repository_name
 }
 
-# Модуль для создания EKS кластера
 module "eks" {
   source = "../../modules/eks"
 
@@ -32,11 +29,11 @@ module "eks" {
   min_size        = var.eks_min_size
 }
 
-# Настройка бэкенда Terraform для хранения state файла в S3
+
 terraform {
   backend "s3" {
     bucket = "projectlev-terraform-state"
     key    = "dev/terraform.tfstate"
-    region = "us-east-1"  # Убедитесь, что это соответствует вашему региону
+    region = "us-east-1"
   }
 }
