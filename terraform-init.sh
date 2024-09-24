@@ -7,10 +7,11 @@ REGION="us-east-1"
 DYNAMODB_TABLE="projectlev-terraform-locks"
 
 # Переход в директорию с Terraform файлами
-cd terraform/environments/dev
+SCRIPT_DIR=$(dirname "$0")
+cd "$SCRIPT_DIR/terraform/environments/dev"
 
 # Инициализация Terraform
-terraform init \
+terraform init -reconfigure \
     -backend-config="bucket=${BUCKET_NAME}" \
     -backend-config="key=${KEY}" \
     -backend-config="region=${REGION}" \
