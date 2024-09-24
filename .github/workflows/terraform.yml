@@ -22,7 +22,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: List files
-      run: ls -ahl ./terraform/environments/dev
+      run: ls -al ./terraform/environments/dev
 
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
