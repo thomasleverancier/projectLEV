@@ -14,9 +14,9 @@
       environment: production
       defaults:
         run:
-          shell: bash
+          working-directory: ./terraform/environments/dev
       steps:
-        - name: Checkout
+        - name: Checkout repository
           uses: actions/checkout@v3
         - name: Setup Terraform
           uses: hashicorp/setup-terraform@v2
@@ -29,6 +29,8 @@
             aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
             aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             aws-region: us-east-1
+        - name: List files
+          run: ls -al ./terraform/environments/dev
         - name: Terraform Init
           run: terraform init -backend-config="bucket=projectlev-terraform-state"
             -backend-config="key=dev/terraform.tfstate"
@@ -43,9 +45,4 @@
           run: exit 1
         - name: Terraform Apply
           if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-          run: terraform apply -auto-approve
-        - name: Terraform Destroy (on PR close)
-          if: github.event_name == 'pull_request' && github.event.action == 'closed' &&
-            github.event.pull_request.merged == true
-          run: terraform destroy -auto-approve
-  
+          run: terraform apply -auto-approve  
