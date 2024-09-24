@@ -21,9 +21,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: List files
-      run: ls -al ./terraform/environments/dev
-
     - name: Setup Terraform
       uses: hashicorp/setup-terraform@v2
       with:
